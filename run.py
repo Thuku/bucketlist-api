@@ -1,8 +1,9 @@
-from flask_script import Manager
+"""Initialization."""
+import os
+from app import create_app
 
-from app import app
-
-manager = Manager()
+environment = os.getenv("ENV")
+app = create_app(environment)
 
 if __name__ == '__main__':
-    manager.run()
+    app.run()

@@ -1,14 +1,16 @@
 """App initialization file."""
-from flask import Flask
+from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
-from flask_restful import Api
-from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
+from app.views.endpoints import api_blueprint
+from config import configuration
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
-db = SQLAlchemy(app)
-api = Api(app)
+db = SQLAlchemy()
 
-from app import views
-from app.models import Bucket
+from app.models import Models
+def create_app(environment):
+    """Create application."""
+    app = FlaskAPI(__name__)
+    app.config.from_object(configuration[environment])
+    db.init_app(app)
+    app.register_blueprint(api_blueprint)
+    return app
