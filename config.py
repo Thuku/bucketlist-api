@@ -11,7 +11,7 @@ class Config(object):
 class TestingConfig(Config):
     """Testing configuration."""
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///bucketlist.db'
+    SQLALCHEMY_DATABASE_URI = 'postgres://thuku:thuku@localhost:5432/test_bucketlist'
     DEBUG = True
 
 
@@ -23,7 +23,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     """Development configuration."""
-    SQLALCHEMY_DATABASE_URI = 'postgresql://bucketlist_user:bucketlist_user@localhost:5432/bucketlist'
+    SQLALCHEMY_DATABASE_URI = 'postgres://thuku:thuku@localhost:5432/bucketlist'
     DEBUG = True
 
 
