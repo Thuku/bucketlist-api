@@ -1,5 +1,6 @@
 """Configration file."""
-
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     """configuration."""
@@ -11,7 +12,8 @@ class Config(object):
 class TestingConfig(Config):
     """Testing configuration."""
 
-    SQLALCHEMY_DATABASE_URI = 'postgres://test_bucketlist'
+    SQLALCHEMY_DATABASE_URI = ("sqlite:///" +
+                                os.path.join(basedir, 'test.db'))
     DEBUG = True
 
 

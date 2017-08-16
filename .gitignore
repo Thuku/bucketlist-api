@@ -6,3 +6,4 @@
 *.pyc
 *.vscode
 .coverage
+*.db
