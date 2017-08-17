@@ -97,10 +97,11 @@ class Login(Resource):
             if res is True:
                 user_id = user.id
                 token = user.generate_token(user_id)
+
                 responseObject = {
                     'status': 'success',
                     'message': ' Login successful',
-                    'token': token
+                    'token': str(token)
                 }
                 return make_response(jsonify(responseObject))
             else:
