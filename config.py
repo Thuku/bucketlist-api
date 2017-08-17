@@ -20,13 +20,13 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     """Production configuration."""
-
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     DEBUG = False
 
 
 class DevelopmentConfig(Config):
     """Development configuration."""
-    SQLALCHEMY_DATABASE_URI = 'postgres://bucketlist'
+    SQLALCHEMY_DATABASE_URI = 'postgres://thuku@localhost:5432/bucketlist'
     DEBUG = True
 
 
