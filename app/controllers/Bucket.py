@@ -14,7 +14,8 @@ class BucketsResource(Resource):
         page = request.args.get('page', type=int, default=1)
         limit = request.args.get('limit', type=int, default=5)
         if user_id is not None:
-            bucketlists = Bucket.query.filter_by(user_id=user_id).paginate(page, limit, False).items
+            bucketlists = Bucket.query.filter_by(
+                user_id=user_id).paginate(page, limit, False).items
             if len(bucketlists) == 0:
                 responseObject = {
                     'status': 'alert',
@@ -37,8 +38,9 @@ class BucketsResource(Resource):
     @logged_in
     def post(self, user_id=None, res=None):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True)
-        parser.add_argument('description', type=str, required=True)
+        parser.add_argument('name', type=str, required=True, location="json")
+        parser.add_argument('description', type=str,
+                            required=True, location="json")
         args = parser.parse_args()
         if len(args['name']) < 5:
             responseObject = {
