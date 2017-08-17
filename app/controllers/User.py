@@ -18,11 +18,20 @@ class Register(Resource):
         parser.add_argument('username',
                             type=str,
                             required=True,
-                            help='Username required')
-        parser.add_argument('email', required=True, help='Email required')
+                            help='Username required',
+                            location="json")
+        parser.add_argument('email', 
+                                required=True, 
+                                help='Email required',
+                                location="json")
         parser.add_argument('password',
-                            required=True, help='Password required')
-        parser.add_argument('confirm_password', required=True, help='Required')
+                            required=True, 
+                            help='Password required',
+                            location="json")
+        parser.add_argument('confirm_password',
+                                 required=True,
+                                 help='Required',
+                                 location="json")
         arguments = parser.parse_args()
 
         if arguments['password'] != arguments['confirm_password']:
