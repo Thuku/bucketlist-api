@@ -89,9 +89,9 @@ class Login(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('username', required=True)
-        parser.add_argument('password', required=True)
-        arguments = parser.parse_args(strict=True)
+        parser.add_argument('username', required=True, location="json")
+        parser.add_argument('password', required=True, location="json")
+        arguments = parser.parse_args()
         print(arguments.get('username'))
 
         user = User.query.filter_by(user_name=arguments.get('username')).first()
