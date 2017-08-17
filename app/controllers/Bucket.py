@@ -1,15 +1,20 @@
 """Authentication."""
 from flask import Flask, request, make_response, json, jsonify
 from flask_restful import reqparse, request, Resource
-from app import  db
+from werkzeug.exceptions import NotFound
+from app import db
 from app.models.Models import User, Bucket
 from app.models.Models import logged_in
+
+
 class BucketsResource(Resource):
 
     @logged_in
-    def get(self, user_id = None, res = None):
+    def get(self, user_id=None, res=None):
+        page = request.args.get('page', type=int, default=1)
+        limit = request.args.get('limit', type=int, default=5)
         if user_id is not None:
-            bucketlists = Bucket.query.filter_by(user_id=user_id).all()
+            bucketlists = Bucket.query.filter_by(user_id=user_id).paginate(page, limit, False).items
             if len(bucketlists) == 0:
                 responseObject = {
                     'status': 'alert',
@@ -29,9 +34,8 @@ class BucketsResource(Resource):
                     responseObject.append(bucket)
                 return make_response((responseObject))
 
-
     @logged_in
-    def post(self, user_id=None, res = None):
+    def post(self, user_id=None, res=None):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, required=True)
         parser.add_argument('description', type=str, required=True)
@@ -50,7 +54,8 @@ class BucketsResource(Resource):
             return make_response(jsonify(responseObject))
         else:
             if user_id is not None:
-                bucketlist = Bucket.query.filter_by(name=args.get('name')).first()
+                bucketlist = Bucket.query.filter_by(
+                    name=args.get('name')).first()
 
                 if not bucketlist:
                     bucketlist = Bucket(
@@ -78,17 +83,18 @@ class BucketResource(Resource):
     @logged_in
     def get(self, bucket_id, user_id=None, res=None):
         if user_id is not None:
-            bucket = Bucket.query.filter_by(id=bucket_id).first()
+            bucket = Bucket.query.filter_by(
+                user_id=user_id, id=bucket_id).first()
+            if bucket is None:
+                raise NotFound("wewe wacha")
             responseObject = {
                 'name': bucket.name,
                 'description': bucket.description,
                 'created': bucket.created_at,
                 'updated': bucket.updated_at
             }
+
             return make_response(jsonify(responseObject))
-
-
-
 
     @logged_in
     def put(self):
@@ -113,10 +119,7 @@ class BucketResource(Resource):
                 }
                 return make_response(jsonify(responseObject))
         else:
-            responseObject = {
-                'status': 'fail',
-                'message': 'Bucket does not exist'
-            }
+            responseObject = res
             return make_response(jsonify(responseObject))
 
     @logged_in
@@ -149,8 +152,6 @@ class BucketResource(Resource):
             }
             return make_response(jsonify(responseObject))
 
-
-
             # if len(args['name'].strip()) < 5 or len(args['description'].strip()) < 5:
             #     responseObject = {
             #         'status': 'fail',
@@ -160,9 +161,3 @@ class BucketResource(Resource):
             # else:
             #     bucket.name = args['name']
             #     bucket.description = args['description']
-
-
-
-
-
-
