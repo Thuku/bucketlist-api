@@ -35,7 +35,6 @@ class User(db.Model):
             'iat': datetime.datetime.now(),
             'sub': id
         }
-        print(payload)
         return jwt.encode(
             payload,
             os.getenv('SECRET_KEY'),
@@ -87,7 +86,6 @@ def logged_in(func):
             payload = jwt.decode(token, os.getenv('SECRET_KEY'))
             user_id = payload['sub']
             user = User.query.get(user_id)
-            print(user_id)
             if user:
                 responseObject = {
                     'staus': 'sucess',
