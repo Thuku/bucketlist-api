@@ -23,7 +23,7 @@ class Register(Resource):
         parser.add_argument('password',
                             required=True, help='Password required')
         parser.add_argument('confirm_password', required=True, help='Required')
-        arguments = parser.parse_args(strict=True)
+        arguments = parser.parse_args()
 
         if arguments['password'] != arguments['confirm_password']:
             responseObject = {
@@ -83,6 +83,7 @@ class Login(Resource):
         parser.add_argument('username', required=True)
         parser.add_argument('password', required=True)
         arguments = parser.parse_args(strict=True)
+        print(arguments.get('username'))
 
         user = User.query.filter_by(user_name=arguments.get('username')).first()
         if not user:
