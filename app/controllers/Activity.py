@@ -7,9 +7,9 @@ from app.models.Models import logged_in
 class ActivitiesResource(Resource):
 
     @logged_in
-    def get(self, bucket_id, user_id=None):
+    def get(self, bucketlist_id, user_id=None, res=None):
         if user_id is not None:
-            bucketlist = Bucket.query.filter_by(user_id=user_id, bucket_id=bucket_id)
+            bucketlist = Bucket.query.filter_by(user_id=user_id, id=bucketlist_id).first()
             if bucketlist:
                 items = bucketlist.activities
                 responseObject = []
@@ -29,8 +29,42 @@ class ActivitiesResource(Resource):
                 }
                 return make_response((responseObject))
 
+    @logged_in
+    def post(self,bucketlist_id, user_id=None, res=None):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, required=True)
+        args = parser.parse_args()
+        if len(args['name']) < 5:
+            responseObject ={
+                'status': 'fail',
+                'message': "Activity should be more than 5 characters"
+            }
+            return make_response(jsonify(responseObject))
 
 
+        else:
+            if user_id is not None:
+                bucketlist = Bucket.query.filter_by(id=bucketlist_id,user_id=user_id).first()
+                if bucketlist:
+                    activity = Activity.query.filter_by(bucket_id=bucketlist_id, name=args.get('name')).first()
+                    if not activity:
+                        activity = Activity(
+                            name=args.get('name'),
+                        )
+                        bucketlist.activities.append(activity)
+                        db.session.add(bucketlist)
+                        db.session.commit()
+                        responseObject = {
+                            'status': 'successful',
+                            'message':'Activity successfuly created'
+                        }
+                        return make_response(jsonify(responseObject))
+                    else:
+                        responseObject = {
+                            'status': 'fail',
+                            'message':'Activity Already exists'
+                        }
+                        return make_response(jsonify(responseObject))
 
 
 class ActivityResource(Resource):
