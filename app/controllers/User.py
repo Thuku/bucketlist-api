@@ -102,7 +102,7 @@ class Login(Resource):
             }
             return make_response(jsonify(responseObject))
         else:
-            res = bcrypt.check_password_hash(pw_hash=user.password, password=arguments.get('password'))
+            res = bcrypt.check_password_hash(user.password,arguments.get('password'))
 
             if res is True:
                 user_id = user.id
