@@ -14,7 +14,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.Binary(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.now,
                            onupdate=datetime.datetime.now),
@@ -24,7 +24,7 @@ class User(db.Model):
         self.user_name = user_name
         self.email = email
         self.password = bcrypt.generate_password_hash(
-            password.encode("utf8"), 12).decode("utf8")
+            password.encode('utf-8'), 12).decode('utf-8')
 
     def __repr__(self):
         return '<name %s>' % (self.id)
