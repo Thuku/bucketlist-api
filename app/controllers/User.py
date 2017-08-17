@@ -20,18 +20,18 @@ class Register(Resource):
                             required=True,
                             help='Username required',
                             location="json")
-        parser.add_argument('email', 
-                                required=True, 
-                                help='Email required',
-                                location="json")
+        parser.add_argument('email',
+                            required=True,
+                            help='Email required',
+                            location="json")
         parser.add_argument('password',
-                            required=True, 
+                            required=True,
                             help='Password required',
                             location="json")
         parser.add_argument('confirm_password',
-                                 required=True,
-                                 help='Required',
-                                 location="json")
+                            required=True,
+                            help='Required',
+                            location="json")
         arguments = parser.parse_args()
 
         if arguments['password'] != arguments['confirm_password']:
@@ -92,9 +92,9 @@ class Login(Resource):
         parser.add_argument('username', required=True, location="json")
         parser.add_argument('password', required=True, location="json")
         arguments = parser.parse_args()
-        user_name=arguments.get('username')
+        username = arguments.get('username')
 
-        user = User.query.filter_by(user_name=user_name).first()
+        user = User.query.filter_by(user_name=username).first()
         if not user:
             responseObject = {
                 'status': 'Fail',
@@ -102,8 +102,8 @@ class Login(Resource):
             }
             return make_response(jsonify(responseObject))
         else:
-            res = bcrypt.check_password_hash(user.password,arguments.get('password'))
-
+            res = bcrypt.check_password_hash(
+                user.password, arguments.get('password'))
             if res is True:
                 user_id = user.id
                 token = user.generate_token(user_id)
@@ -120,7 +120,3 @@ class Login(Resource):
                     'message': 'Wrong password'
                 }
                 return make_response(jsonify(responseObject))
-
-
-
-
