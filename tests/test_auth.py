@@ -21,7 +21,8 @@ class Base(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_login(self):
+    def test_user_registration(self):
+        "Test a user can register."
         response = self.client().post('/authentication/register', data=dict(
             username="superman",
             password="password",
@@ -29,6 +30,41 @@ class Base(unittest.TestCase):
             email="superman@test.com"
         ))
         self.assertEqual(response.status_code, 201)
+    def test_user_login(self):
+        response_register = self.test_user_registration()
+        response = self.client().post('/authentication/login', data=dict(
+            username="superman",
+            password="password"
+        ))
+        self.assertEqual(response.status_code, 200)
+    def test_incorrect_user_registration(self):
+        response = self.client().post('/authentication/register', data=dict(
+            username="superman",
+            password="password",
+            confirm_password="passwo",
+            email="superman@test.com"
+        ))
+        self.assertEqual(response.status_code, 200)
+        response = self.client().post('/authentication/register', data=dict(
+            username="superman",
+            password="password",
+            email="superman@test.com"
+        ))
+        self.assertEqual(response.status_code, 400)
+        response = self.client().post('/authentication/register', data=dict(
+            username="sup",
+            password="password",
+            confirm_password="password",
+            email="superman@test.com"
+        ))
+        self.assertEqual(response.status_code, 200)
+        response = self.client().post('/authentication/register', data=dict(
+            username="superman",
+            password="password",
+            confirm_password="password"        ))
+        self.assertEqual(response.status_code, 400)
+
+
 
 if __name__ == "__main__":
     unittest.main()
