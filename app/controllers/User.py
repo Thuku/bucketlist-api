@@ -92,9 +92,9 @@ class Login(Resource):
         parser.add_argument('username', required=True, location="json")
         parser.add_argument('password', required=True, location="json")
         arguments = parser.parse_args()
-        print(arguments.get('username'))
+        user_name=arguments.get('username')
 
-        user = User.query.filter_by(user_name=arguments.get('username')).first()
+        user = User.query.filter_by(user_name=user_name).first()
         if not user:
             responseObject = {
                 'status': 'Fail',
