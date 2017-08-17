@@ -16,4 +16,4 @@ api.add_resource(Login, '/authentication/login')
 api.add_resource(BucketsResource, '/bucket')
 api.add_resource(BucketResource, '/bucket/<int:bucket_id>')
 
-api.add_resource(ActivitiesResource, '/bucket/<int:bucket_id>/item')
+api.add_resource(ActivitiesResource, '/bucket/<int:bucketlist_id>/items')
