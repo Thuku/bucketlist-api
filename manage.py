@@ -7,7 +7,7 @@ from flask_migrate import Migrate, MigrateCommand
 from app import create_app, db
 
 environment = os.getenv('ENV') or 'development'
-app = create_app(config_name=environment)
+app = create_app(environment)
 
 migrate = Migrate(app, db)
 manager = Manager(app)
