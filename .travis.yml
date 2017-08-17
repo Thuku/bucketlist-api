@@ -6,6 +6,11 @@ python:
 
 install:
    - pip install -r requirements.txt
+env:
+  - FLASK_APP=run.py
+  - ENV="testing"
+  - SECRET_KEY="ndvbfsdjmnbfjkmnbdcbnmxvjhnmbsxnmbasdjnmmdsnmxbjhdshjcknmb"
+
 script:
   nosetests --with-coverage --cover-package=app/ && coverage report
 after_success:
