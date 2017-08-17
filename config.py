@@ -7,13 +7,13 @@ class Config(object):
 
     SQLALCHEMY_DATABASE_URI = 'postgres://bucketlist'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
+    ERROR_404_HELP =False
 
 class TestingConfig(Config):
     """Testing configuration."""
 
-    SQLALCHEMY_DATABASE_URI = ("sqlite:///" +
-                                os.path.join(basedir, 'test.db'))
+    SQLALCHEMY_DATABASE_URI = ("sqlite:///" + os.path.join(basedir, 'test.db'))
+    SECRET_KEY="ndvbfsdjmnbfjkmnbdcbnmxvjhnmbsxnmbasdjnmmdsnmxbjhdshjcknmb"
     DEBUG = True
 
 
