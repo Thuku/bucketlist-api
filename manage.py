@@ -1,10 +1,13 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
 from app import create_app, db
-app = create_app("development")
+
+environment = os.getenv('ENV') or 'development'
+app = create_app(environment)
 
 migrate = Migrate(app, db)
 manager = Manager(app)
@@ -13,8 +16,7 @@ manager = Manager(app)
 @manager.command
 def createdb():
     db.create_all()
-    print(db)
-    print("Migrating")
+    print("database created successfully")
 
 
 @manager.command

@@ -13,7 +13,7 @@ class Register(Resource):
         return {"Authenticate": "Please try again"}
 
     def post(self):
-        """Registration endtpoint."""
+        """Registration New user."""
         parser = reqparse.RequestParser()
         parser.add_argument('username',
                             type=str,
