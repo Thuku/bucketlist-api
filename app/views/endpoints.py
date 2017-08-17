@@ -17,5 +17,5 @@ api.add_resource(BucketsResource, '/bucket')
 api.add_resource(BucketResource, '/bucket/<int:bucket_id>')
 
 api.add_resource(ActivitiesResource, '/bucket/<int:bucketlist_id>/items')
-api.add_resource(ActivityResource, '/bucket/<int:bucketlist_id>/item/<int:item_id>')
-
+api.add_resource(ActivityResource,
+                 '/bucket/<int:bucketlist_id>/item/<int:item_id>')
