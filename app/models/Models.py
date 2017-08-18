@@ -39,10 +39,6 @@ class User(db.Model):
             algorithm='HS256'
         )
 
-    # def __repr__(self):
-    #     return '<name %s>' % (self.id)
-
-
 class Bucket(db.Model):
     __tablename__ = 'buckets'
     id = db.Column(db.Integer, primary_key=True)
