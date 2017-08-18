@@ -21,7 +21,7 @@ class ActivitiesResource(Resource):
                         'status': 'alert',
                         'message': 'Add activities to your bucketlist'
                     }
-                return make_response((responseObject))
+                    return make_response((responseObject))
                 responseObject = []
                 for item in items:
                     item = {
@@ -116,5 +116,34 @@ class ActivityResource(Resource):
                     raise NotFound("wewe wacha")
                 responseObject = {
                     'name': activity.name
+                }
+                return make_response(jsonify(responseObject))
+
+    @logged_in
+    def put(self, bucketlist_id, item_id, user_id=None, res=None):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, location='json')
+        args = parser.parse_args()
+        bucket = Bucket.query.filter_by(
+            user_id=user_id, id=bucketlist_id).first()
+        if bucket and user_id is not None:
+            if user_id == bucket.user_id:
+                activity = Activity.query.filter_by(
+                    id=item_id, bucket_id=bucketlist_id).first()
+                if activity is None:
+                    raise NotFound("wewe wacha")
+                if activity:
+                    activity.name = args['name']
+                    db.session.add(activity)
+                    db.session.commit()
+                    responseObject = {
+                        'status': 'success',
+                        'message': 'Activity successfully Updated'
+                    }
+                return make_response(jsonify(responseObject))
+            else:
+                responseObject = {
+                    'status': 'fail',
+                    'message': 'Error updating bucketlist activity'
                 }
                 return make_response(jsonify(responseObject))
