@@ -99,10 +99,6 @@ class BucketResource(Resource):
             return make_response(jsonify(responseObject))
 
     @logged_in
-    def put(self):
-        pass
-
-    @logged_in
     def delete(self, bucket_id, user_id=None, res=None):
         if user_id is not None:
             bucket = Bucket.query.filter_by(id=bucket_id).first()
@@ -132,8 +128,8 @@ class BucketResource(Resource):
     def put(self, bucket_id, user_id=None, res=None):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str)
-        parser.add_argument('description', type=str)
+        parser.add_argument('name', type=str, location='json')
+        parser.add_argument('description', type=str, location='json')
         args = parser.parse_args()
         bucket = Bucket.query.filter_by(user_id=user_id, id=bucket_id).first()
         print(user_id, bucket_id)
