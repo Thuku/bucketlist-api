@@ -7,8 +7,6 @@ from functools import wraps
 from app import db, bcrypt
 
 
-
-
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -23,10 +21,10 @@ class User(db.Model):
     def __init__(self, user_name, email, password):
         self.user_name = user_name
         self.email = email
-        self.password = bcrypt.generate_password_hash(password)
+        self.password = self.hash_password(password)
 
-    def __repr__(self):
-        return '<name %s>' % (self.id)
+    def hash_password(self, password):
+        return bcrypt.generate_password_hash(password, 12).decode("utf-8")
 
     def generate_token(self, id):
         """Generate authentication token."""
@@ -35,14 +33,11 @@ class User(db.Model):
             'iat': datetime.datetime.now(),
             'sub': id
         }
-        print(payload)
         return jwt.encode(
             payload,
             os.getenv('SECRET_KEY'),
             algorithm='HS256'
-        )
-
-
+        ).decode("utf-8")
 
 class Bucket(db.Model):
     __tablename__ = 'buckets'
@@ -54,7 +49,8 @@ class Bucket(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.now,
                            onupdate=datetime.datetime.now)
-    activities = db.relationship("Activity", cascade="all, delete", backref="buckets")
+    activities = db.relationship(
+        "Activity", cascade="all, delete", backref="buckets")
 
     def __init__(self, name, description, user_id):
         self.name = name
@@ -63,6 +59,7 @@ class Bucket(db.Model):
 
     def __repr__(self):
         return '<name %s>' % (self.name)
+
 
 class Activity(db.Model):
     __tablename__ = 'activities'
@@ -76,8 +73,10 @@ class Activity(db.Model):
 
     def __init__(self, name):
         self.name = name
+
     def __repr__(self):
         return '<name %s>' % (self.name)
+
 
 def logged_in(func):
     @wraps(func)
@@ -87,7 +86,6 @@ def logged_in(func):
             payload = jwt.decode(token, os.getenv('SECRET_KEY'))
             user_id = payload['sub']
             user = User.query.get(user_id)
-            print(user_id)
             if user:
                 responseObject = {
                     'staus': 'sucess',
@@ -99,7 +97,7 @@ def logged_in(func):
                 }
                 kwargs.update(new_kwargs)
             else:
-                responseObject ={
+                responseObject = {
                     'status': 'fail',
                     'message': 'User not found'
                 }
@@ -113,7 +111,7 @@ def logged_in(func):
                 'status': 'Fail',
                 'message': 'Token expired please login'
             }
-            return  make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject))
         except jwt.InvalidTokenError:
             responseObject = {
                 'status': 'fail',

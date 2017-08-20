@@ -1,0 +1,248 @@
+FORMAT: 1A
+HOST: https://bucketlist-planner.herokuapp.com/
+
+# Bucketlist Planner.
+
+Bucketlist planner is a simple application that allows its users to create bucketlists activities
+that they plan to accomplish.
+
+## Group Authentication
+
+## Register [/authentication/register]
+
+### Register New user [POST]
+
+Registers new user by getting the username,
+password, email and confirm password.
+
+Username nd email should be unique and password should be more than 5 characters
++ Request (application/json)
+
+        {
+            "username": "herman",
+            "password": "password",
+            "confirm_password": "password",
+            "email": "herman@gmail.com"
+        }
++ Response 200 (application/json)
+
+        {
+             "message": "Registration Successful, You can now login into your account",
+             "status": "Successful"
+        }
+
+## Login [/authentication/login]
+
+
+### Login registered user [POST]
+Login using the usernam that you registered with successfully.
+
+On successful login a token is generated that is used to access other routes on the api.
++ Request (application/json)
+
+        {
+            "username": "herman",
+            "password": "password"
+        }
++ Response 200 (application/json)
+
+        {
+             "message": " Login successful",
+             "status": "success",
+             "token": "token"
+        }
+
+## Group Bucketlist
+
+Create your bucketlist(s) and manipulate them here.
+
+## bucketlists [/bucket]
+
+### Create Bucketlist [POST]
+
+Create a bucketlist and use the token generatad in login step to access this resource.
+   
++   Request (application/json)
+
+
+        {
+            "name": "Mombasa adventures",
+            "description": "Visit the coastal town of mombasa and engage in thrilling activities"
+        }
+
++   Response 200 (application/json)
+
+        {
+            "message": "Bucketlist created successfully",
+            "status": "successful"
+        }
+
+### Get all your created bucketlists [GET]
+
+Get your bucketlists
+
++ Request (application/json)
+
+      + Headers
+
+              Authorization : "token"
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "name": "Mombasa adventures",
+                "description": "Visit the coastal town of mombasa and engage in thrilling activities",
+                "created": "Thu, 17 Aug 2017 19:57:07 GMT",
+                "modified": "Thu, 17 Aug 2017 19:57:07 GMT"
+            }
+        ]
+
+## Bucketlist manipulation. [/bucket/id]
+### Get specific bucketlist [GET]
+ Get a specific bucketlist
+ 
+ + Request (application/json)
+ 
+        + Headers Authorization : "token"
+                
++ Response 200 (application/json)
+
+        {
+            "created": "Thu, 17 Aug 2017 18:33:46 GMT",
+            "description": "Hit the mombasa town like and party like its 1999",
+            "name": "Mombasa Raha adventures",
+            "updated": "Thu, 17 Aug 2017 18:33:46 GMT" 
+        
+        }
+
+### Update a bucketlist [PUT]
+
+Update your bucketlist.
+You can change either its name or/and description
+
+ + Request (application/json)
+ 
+        + Headers Authorization : "token"
+        
+        + Body 
+            
+            {
+                "name": "new bucketlist name",
+                "description": "updated description"
+            }
+            
++ Response 200 (application/json)
+
+        {
+            "status": "success",
+            "message": "Bucketlist successfully Updated"
+        }
+        
+### Delete a bucketlist [DELETE]
+
+Delete a given bucketlist
+
++ Request (application/json)
+ 
+        + Headers Authorization : "token"
+
++ Response 200 (application/json)
+
+        {
+            "status": "success",
+            "messag"': "Bucketlist successfully deleted"
+        }
+
+## Bucketlist Activities [/bucket/id/items]
+
+### Create a bucketlist activity [POST]
+
+Create an ativity for a bucketlist
+
+
++ Request (application/json)
+ 
+        + Headers Authorization : "token"
+                
++ Response 200 (application/json)
+
+        {
+            "status": "successful",
+            "message": 'Activity successfuly created"
+        }
+        
+### Get all activitiies of a specific bucket [GET]
+
+ For a specific bucketlist get all its activities.
+
++ Request (application/json)
+ 
+        + Headers Authorization : "token"
+                
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 3,
+                "name": "Enjoy a swim",
+                "bucket_id": 1,
+                "created": "Thu, 17 Aug 2017 21:45:19 GMT",
+                "modified": "Thu, 17 Aug 2017 21:45:19 GMT"
+            },
+            {
+                "id": 2,
+                "name": "Visit all the sandy beaches and enjoy a good swim",
+                "bucket_id": 1,
+                "created": "Thu, 17 Aug 2017 21:42:43 GMT",
+                "modified": "Fri, 18 Aug 2017 05:43:13 GMT"
+            }
+        ]
+
+## Bucketlist Activity manipulation [/bucket/id/item/id]
+
+### Get a specific activity of a bucketlist [GET]
+
++ Request (application/json)
+ 
+        + Headers Authorization : "token"
+
++ Response 200 (application/json)
+
+        {
+            "name": "Enjoy a swim"
+        }
+### Update a bucketlist activity [PUT]
+
++ Request (application/json)
+ 
+        + Headers Authorization : "token"
+        
+        + Body
+            
+            {
+                "name":"New name"
+            }
+
++ Response 200 (appliction/json)
+
+        {
+            "status": "successful",
+            "message": 'Activity successfuly updated"
+        }
+
+### Delete a bucketlist activity [DELETE]
+
++ Request (application/json)
+ 
+        + Headers Authorization : "token"
+
++ Response 200 (application/json)
+
+        {
+            "status": "success",
+            "message": "Activity successfully deleted"
+        }
+

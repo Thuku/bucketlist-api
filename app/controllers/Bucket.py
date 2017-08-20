@@ -1,15 +1,21 @@
 """Authentication."""
 from flask import Flask, request, make_response, json, jsonify
 from flask_restful import reqparse, request, Resource
-from app import  db
+from werkzeug.exceptions import NotFound
+from app import db
 from app.models.Models import User, Bucket
 from app.models.Models import logged_in
+
+
 class BucketsResource(Resource):
 
     @logged_in
-    def get(self, user_id = None, res = None):
+    def get(self, user_id=None, res=None):
+        page = request.args.get('page', type=int, default=1)
+        limit = request.args.get('limit', type=int, default=5)
         if user_id is not None:
-            bucketlists = Bucket.query.filter_by(user_id=user_id).all()
+            bucketlists = Bucket.query.filter_by(
+                user_id=user_id).paginate(page, limit, False).items
             if len(bucketlists) == 0:
                 responseObject = {
                     'status': 'alert',
@@ -29,28 +35,29 @@ class BucketsResource(Resource):
                     responseObject.append(bucket)
                 return make_response((responseObject))
 
-
     @logged_in
-    def post(self, user_id=None, res = None):
+    def post(self, user_id=None, res=None):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True)
-        parser.add_argument('description', type=str, required=True)
+        parser.add_argument('name', type=str, required=True, location="json")
+        parser.add_argument('description', type=str,
+                            required=True, location="json")
         args = parser.parse_args()
         if len(args['name']) < 5:
             responseObject = {
                 'status': 'Fail',
                 'message': 'Bucketlist name should be at least 5 characters'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
         elif len(args['description']) < 5:
             responseObject = {
                 'status': 'Fail',
                 'message': 'Bucketlist Description should be at least 5 characters'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
         else:
             if user_id is not None:
-                bucketlist = Bucket.query.filter_by(name=args.get('name')).first()
+                bucketlist = Bucket.query.filter_by(
+                    name=args.get('name')).first()
 
                 if not bucketlist:
                     bucketlist = Bucket(
@@ -64,13 +71,13 @@ class BucketsResource(Resource):
                         'status': 'successful',
                         'message': 'Bucketlist created successfully'
                     }
-                    return make_response(jsonify(responseObject))
+                    return make_response(jsonify(responseObject), 201)
                 else:
                     responseObject = {
                         'status': 'fail',
                         'message': 'Bucketlist already exists'
                     }
-                    return make_response(jsonify(responseObject))
+                    return make_response(jsonify(responseObject), 409)
 
 
 class BucketResource(Resource):
@@ -78,21 +85,18 @@ class BucketResource(Resource):
     @logged_in
     def get(self, bucket_id, user_id=None, res=None):
         if user_id is not None:
-            bucket = Bucket.query.filter_by(id=bucket_id).first()
+            bucket = Bucket.query.filter_by(
+                user_id=user_id, id=bucket_id).first()
+            if bucket is None:
+                raise NotFound("wewe wacha")
             responseObject = {
                 'name': bucket.name,
                 'description': bucket.description,
                 'created': bucket.created_at,
                 'updated': bucket.updated_at
             }
+
             return make_response(jsonify(responseObject))
-
-
-
-
-    @logged_in
-    def put(self):
-        pass
 
     @logged_in
     def delete(self, bucket_id, user_id=None, res=None):
@@ -111,24 +115,14 @@ class BucketResource(Resource):
                     'status': 'fail',
                     'message': 'You have no such bucketlist'
                 }
-                return make_response(jsonify(responseObject))
-        else:
-            responseObject = {
-                'status': 'fail',
-                'message': 'Bucket does not exist'
-            }
-            return make_response(jsonify(responseObject))
-
-    @logged_in
-    def patch(self):
-        pass
+                return make_response(jsonify(responseObject), 404)
 
     @logged_in
     def put(self, bucket_id, user_id=None, res=None):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str)
-        parser.add_argument('description', type=str)
+        parser.add_argument('name', type=str, location='json')
+        parser.add_argument('description', type=str, location='json')
         args = parser.parse_args()
         bucket = Bucket.query.filter_by(user_id=user_id, id=bucket_id).first()
         print(user_id, bucket_id)
@@ -148,21 +142,3 @@ class BucketResource(Resource):
                 'message': 'Error updating bucketlist'
             }
             return make_response(jsonify(responseObject))
-
-
-
-            # if len(args['name'].strip()) < 5 or len(args['description'].strip()) < 5:
-            #     responseObject = {
-            #         'status': 'fail',
-            #         'message': 'Name/Description should be Five characters or more'
-            #     }
-            #     return make_response(jsonify(responseObject))
-            # else:
-            #     bucket.name = args['name']
-            #     bucket.description = args['description']
-
-
-
-
-
-
