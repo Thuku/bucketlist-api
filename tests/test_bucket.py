@@ -34,6 +34,12 @@ class BucketTestCase(Base):
 
         response = self.client().get('/bucket', headers=self.set_headers())
         self.assertEqual(response.status_code, 200)
+    def test_user_search_bucket(self):
+        self.create_user()
+        self.create_bucket()
+        self.create_activity()
+        response = response = self.client().get('/bucket?q=Mombasa adventures', headers=self.set_headers())
+        self.assertEqual(response.status_code, 201)
 
     def test_bucket_short_name(self):
         self.create_user()
