@@ -11,9 +11,10 @@ class BucketsResource(Resource):
 
     @logged_in
     def get(self, user_id=None, res=None):
+        q = request.args.get('q', type=str, default=None)
         page = request.args.get('page', type=int, default=1)
         limit = request.args.get('limit', type=int, default=5)
-        if user_id is not None:
+        if user_id is not None and q is None:
             bucketlists = Bucket.query.filter_by(
                 user_id=user_id).paginate(page, limit, False).items
             if len(bucketlists) == 0:
@@ -34,7 +35,25 @@ class BucketsResource(Resource):
                     }
                     responseObject.append(bucket)
                 return make_response((responseObject))
-
+        else:
+            print(q)
+            bucketlists = Bucket.query.filter_by(name=q,
+                user_id=user_id).paginate(page, limit, False).items
+            responseObject = []
+            for bucketlist in bucketlists:
+                bucket = {
+                    'id': bucketlist.id,
+                    'name': bucketlist.name,
+                    'description': bucketlist.description,
+                    'created': bucketlist.created_at,
+                    'modified': bucketlist.updated_at
+                }
+                responseObject.append(bucket)
+            return make_response((responseObject), 201)
+            if bucketlists is None:
+                raise NotFound("wewe wacha")
+                
+                
     @logged_in
     def post(self, user_id=None, res=None):
         parser = reqparse.RequestParser()
