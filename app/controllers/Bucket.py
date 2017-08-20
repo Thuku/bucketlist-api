@@ -47,13 +47,13 @@ class BucketsResource(Resource):
                 'status': 'Fail',
                 'message': 'Bucketlist name should be at least 5 characters'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
         elif len(args['description']) < 5:
             responseObject = {
                 'status': 'Fail',
                 'message': 'Bucketlist Description should be at least 5 characters'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
         else:
             if user_id is not None:
                 bucketlist = Bucket.query.filter_by(
@@ -71,13 +71,13 @@ class BucketsResource(Resource):
                         'status': 'successful',
                         'message': 'Bucketlist created successfully'
                     }
-                    return make_response(jsonify(responseObject))
+                    return make_response(jsonify(responseObject), 201)
                 else:
                     responseObject = {
                         'status': 'fail',
                         'message': 'Bucketlist already exists'
                     }
-                    return make_response(jsonify(responseObject))
+                    return make_response(jsonify(responseObject), 409)
 
 
 class BucketResource(Resource):
@@ -115,14 +115,7 @@ class BucketResource(Resource):
                     'status': 'fail',
                     'message': 'You have no such bucketlist'
                 }
-                return make_response(jsonify(responseObject))
-        else:
-            responseObject = res
-            return make_response(jsonify(responseObject))
-
-    @logged_in
-    def patch(self):
-        pass
+                return make_response(jsonify(responseObject), 404)
 
     @logged_in
     def put(self, bucket_id, user_id=None, res=None):
@@ -149,13 +142,3 @@ class BucketResource(Resource):
                 'message': 'Error updating bucketlist'
             }
             return make_response(jsonify(responseObject))
-
-            # if len(args['name'].strip()) < 5 or len(args['description'].strip()) < 5:
-            #     responseObject = {
-            #         'status': 'fail',
-            #         'message': 'Name/Description should be Five characters or more'
-            #     }
-            #     return make_response(jsonify(responseObject))
-            # else:
-            #     bucket.name = args['name']
-            #     bucket.description = args['description']

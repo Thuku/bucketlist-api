@@ -21,7 +21,7 @@ class ActivitiesResource(Resource):
                         'status': 'alert',
                         'message': 'Add activities to your bucketlist'
                     }
-                    return make_response((responseObject))
+                    return make_response((responseObject), 200)
                 responseObject = []
                 for item in items:
                     item = {
@@ -32,13 +32,13 @@ class ActivitiesResource(Resource):
                         'modified': item.updated_at
                     }
                     responseObject.append(item)
-                return make_response((responseObject))
+                return make_response((responseObject), 201)
             else:
                 responseObject = {
                     'status': 'fail',
                     'message': 'bucketlist  does not exist'
                 }
-                return make_response((responseObject))
+                return make_response((responseObject), 404)
 
     @logged_in
     def post(self, bucketlist_id, user_id=None, res=None):
@@ -50,7 +50,7 @@ class ActivitiesResource(Resource):
                 'status': 'fail',
                 'message': "Activity should be more than 5 characters"
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
 
         else:
             if user_id is not None:
@@ -70,13 +70,13 @@ class ActivitiesResource(Resource):
                             'status': 'successful',
                             'message': 'Activity successfuly created'
                         }
-                        return make_response(jsonify(responseObject))
+                        return make_response(jsonify(responseObject), 200)
                     else:
                         responseObject = {
                             'status': 'fail',
                             'message': 'Activity Already exists'
                         }
-                        return make_response(jsonify(responseObject))
+                        return make_response(jsonify(responseObject), 409)
 
 
 class ActivityResource(Resource):
@@ -94,13 +94,13 @@ class ActivityResource(Resource):
                     'status': 'success',
                     'message': 'Activity successfully deleted'
                 }
-                return make_response(jsonify(responseObject))
+                return make_response(jsonify(responseObject), 200)
             else:
                 responseObject = {
                     'status': 'fail',
                     'message': 'You have no such Activity in your bucketlist'
                 }
-                return make_response(jsonify(responseObject))
+                return make_response(jsonify(responseObject), 404)
         else:
             responseObject = res
             return make_response(jsonify(responseObject))

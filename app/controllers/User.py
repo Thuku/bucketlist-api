@@ -8,10 +8,6 @@ from app.models.Models import User
 class Register(Resource):
     """Authentication class."""
 
-    def get(self):
-        """Get endtpoint."""
-        return {"Authenticate": "Please try again"}
-
     def post(self):
         """Registration New user."""
         parser = reqparse.RequestParser()
@@ -39,25 +35,25 @@ class Register(Resource):
                 'status': 'Fail',
                 'message': 'Please confirm you password'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
         elif len(arguments['password']) < 6:
             responseObject = {
                 'status': 'Fail',
                 'message': 'password should be more than Six characters'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 400)
         elif len(arguments['username']) < 5:
             responseObject = {
                 'status': 'Fail',
                 'message': 'Username should be more than Five characters'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 400)
         elif User.query.filter_by(user_name=arguments.get('username')).first():
             responseObject = {
                 'status': 'Fail',
                 'message': 'Username is already taken'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 409)
 
         else:
 
@@ -100,7 +96,7 @@ class Login(Resource):
                 'status': 'Fail',
                 'message': 'Username does not exist'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
         else:
             res = bcrypt.check_password_hash(
                 user.password, arguments.get('password'))
@@ -119,4 +115,4 @@ class Login(Resource):
                     'status': 'fail',
                     'message': 'Wrong password'
                 }
-                return make_response(jsonify(responseObject))
+                return make_response(jsonify(responseObject), 401)
