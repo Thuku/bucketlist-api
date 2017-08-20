@@ -37,7 +37,7 @@ class User(db.Model):
             payload,
             os.getenv('SECRET_KEY'),
             algorithm='HS256'
-        )
+        ).decode("utf-8")
 
 class Bucket(db.Model):
     __tablename__ = 'buckets'
