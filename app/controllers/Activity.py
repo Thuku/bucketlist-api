@@ -4,8 +4,7 @@ from flask_restful import reqparse, request, Resource
 from werkzeug.exceptions import NotFound
 from app import db
 from app.models.Models import User, Bucket, Activity
-from app.models.Models import logged_in
-
+from app.controllers.login import logged_in
 
 class ActivitiesResource(Resource):
 
