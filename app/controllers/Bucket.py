@@ -37,8 +37,7 @@ class BucketsResource(Resource):
                 return make_response((responseObject))
         else:
             print(q)
-            bucketlists = Bucket.query.filter_by(name=q,
-                                                 user_id=user_id).paginate(page, limit, False).items
+            bucketlists = Bucket.query.filter(Bucket.name.contains(q), user_id==user_id).paginate(page, limit, False).items
             responseObject = []
             for bucketlist in bucketlists:
                 bucket = {
