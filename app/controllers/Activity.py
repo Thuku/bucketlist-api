@@ -50,6 +50,12 @@ class ActivitiesResource(Resource):
                 'message': "Activity should be more than 5 characters"
             }
             return make_response(jsonify(responseObject), 401)
+        elif (args['name'].replace(' ', '')).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Bucketlist name should not have special characters'
+            }
+            return make_response(jsonify(responseObject), 400)
 
         else:
             if user_id is not None:

@@ -38,7 +38,7 @@ class BucketsResource(Resource):
         else:
             print(q)
             bucketlists = Bucket.query.filter_by(name=q,
-                user_id=user_id).paginate(page, limit, False).items
+                                                 user_id=user_id).paginate(page, limit, False).items
             responseObject = []
             for bucketlist in bucketlists:
                 bucket = {
@@ -52,8 +52,7 @@ class BucketsResource(Resource):
             return make_response((responseObject), 201)
             if bucketlists is None:
                 raise NotFound("wewe wacha")
-                
-                
+
     @logged_in
     def post(self, user_id=None, res=None):
         parser = reqparse.RequestParser()
@@ -73,6 +72,19 @@ class BucketsResource(Resource):
                 'message': 'Bucketlist Description should be at least 5 characters'
             }
             return make_response(jsonify(responseObject), 401)
+        elif (args['name'].replace(' ', '')).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Bucketlist name should not have special characters'
+            }
+            return make_response(jsonify(responseObject), 400)
+        elif (args['description'].replace(' ', '')).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Bucketlist description should not have special characters'
+            }
+            return make_response(jsonify(responseObject), 400)
+
         else:
             if user_id is not None:
                 bucketlist = Bucket.query.filter_by(

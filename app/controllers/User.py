@@ -48,6 +48,12 @@ class Register(Resource):
                 'message': 'Username should be more than Five characters'
             }
             return make_response(jsonify(responseObject), 400)
+        elif (arguments['username'].strip()).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Username should not have special spaces/characters'
+            }
+            return make_response(jsonify(responseObject), 400)
         elif User.query.filter_by(user_name=arguments.get('username')).first():
             responseObject = {
                 'status': 'Fail',
