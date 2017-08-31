@@ -37,7 +37,7 @@ def logged_in(func):
                 'status': 'Fail',
                 'message': 'Token expired please login'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject),401)
         except jwt.InvalidTokenError:
             responseObject = {
                 'status': 'fail',
