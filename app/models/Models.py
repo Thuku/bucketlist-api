@@ -27,7 +27,7 @@ class User(db.Model):
     def generate_token(self, id):
         """Generate authentication token."""
         payload = {
-            'exp': datetime.datetime.now() + datetime.timedelta(seconds=90),
+            'exp': datetime.datetime.now() + datetime.timedelta(seconds=900),
             'iat': datetime.datetime.now(),
             'sub': id
         }
