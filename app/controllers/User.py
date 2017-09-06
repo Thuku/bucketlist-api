@@ -3,6 +3,7 @@ from flask import Flask, request, make_response, json, jsonify
 from flask_restful import reqparse, request, Resource
 from app import db, bcrypt
 from app.models.Models import User
+from app.controllers.login import logged_in
 
 
 class Register(Resource):
@@ -88,6 +89,17 @@ class Register(Resource):
 class Login(Resource):
     def __init__(self):
         pass
+
+    @logged_in
+    def get(self, user_id=None, res=None):
+        if user_id is not None:
+            user = User.query.get(user_id)
+            responseObject = {
+                'status': 'success',
+                'username': user.user_name
+                }
+        return make_response(jsonify(responseObject), 200)
+
 
     def post(self):
         parser = reqparse.RequestParser()
