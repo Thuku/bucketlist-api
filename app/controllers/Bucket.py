@@ -60,7 +60,7 @@ class BucketsResource(Resource):
                 return make_response((responseObject), 201)
             else:
                 responseObject = {
-                    'status': 'fail',
+                    'status': 'alert',
                     'message': 'Bucketlist not found'
                 }
                 return make_response((responseObject))
