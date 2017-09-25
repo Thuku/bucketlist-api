@@ -13,7 +13,7 @@ class BucketsResource(Resource):
     def get(self, user_id=None, res=None):
         q = request.args.get('q', type=str, default=None)
         page = request.args.get('page', type=int, default=1)
-        limit = request.args.get('limit', type=int, default=5)
+        limit = request.args.get('limit', type=int, default=10)
         if user_id is not None and q is None:
             bucketlists = Bucket.query.filter_by(
                 user_id=user_id).paginate(page, limit, False).items
