@@ -13,10 +13,12 @@ class BucketsResource(Resource):
     def get(self, user_id=None, res=None):
         q = request.args.get('q', type=str, default=None)
         page = request.args.get('page', type=int, default=1)
-        limit = request.args.get('limit', type=int, default=10)
+        limit = request.args.get('limit', type=int, default=3)
+        Bucket_obj = Bucket.query.filter_by(
+                user_id=user_id).paginate(page, limit, False)
+        total_pages={"pages":Bucket_obj.pages}
         if user_id is not None and q is None:
-            bucketlists = Bucket.query.filter_by(
-                user_id=user_id).paginate(page, limit, False).items
+            bucketlists = Bucket_obj.items
             if len(bucketlists) == 0:
                 responseObject = {
                     'status': 'alert',
@@ -26,6 +28,7 @@ class BucketsResource(Resource):
             else:
                 responseObject = []
                 for bucketlist in bucketlists:
+                    
                     bucket = {
                         'id': bucketlist.id,
                         'name': bucketlist.name,
@@ -34,6 +37,7 @@ class BucketsResource(Resource):
                         'modified': bucketlist.updated_at
                     }
                     responseObject.append(bucket)
+                    responseObject.append(total_pages)
                 return make_response((responseObject))
         else:
             print(q)
