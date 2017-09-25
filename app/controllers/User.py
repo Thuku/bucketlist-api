@@ -4,6 +4,7 @@ from flask_restful import reqparse, request, Resource
 from app import db, bcrypt
 from app.models.Models import User
 from app.controllers.login import logged_in
+import re
 
 
 class Register(Resource):
@@ -36,7 +37,7 @@ class Register(Resource):
                 'status': 'Fail',
                 'message': 'Please confirm you password'
             }
-            return make_response(jsonify(responseObject), 401)
+            return make_response(jsonify(responseObject), 400)
         elif len(arguments['password']) < 6:
             responseObject = {
                 'status': 'Fail',
@@ -47,6 +48,12 @@ class Register(Resource):
             responseObject = {
                 'status': 'Fail',
                 'message': 'Username should be more than Five characters'
+            }
+            return make_response(jsonify(responseObject), 400)
+        elif re.match("([^@|\s]+@[^@]+\.[^@|\s]+)", arguments['email']) == None:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Invalid Email'
             }
             return make_response(jsonify(responseObject), 400)
         elif (arguments['username'].strip()).isalpha() is False:
@@ -97,9 +104,8 @@ class Login(Resource):
             responseObject = {
                 'status': 'success',
                 'username': user.user_name
-                }
+            }
         return make_response(jsonify(responseObject), 200)
-
 
     def post(self):
         parser = reqparse.RequestParser()
