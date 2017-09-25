@@ -41,20 +41,29 @@ class BucketsResource(Resource):
                 return make_response((responseObject))
         else:
             print(q)
-            bucketlists = Bucket.query.filter(Bucket.name.contains(q), user_id==user_id).paginate(page, limit, False).items
-            responseObject = []
-            for bucketlist in bucketlists:
-                bucket = {
-                    'id': bucketlist.id,
-                    'name': bucketlist.name,
-                    'description': bucketlist.description,
-                    'created': bucketlist.created_at,
-                    'modified': bucketlist.updated_at
+            search_bucketlists = Bucket.query.filter(Bucket.name.contains(q), user_id==user_id).paginate(page, limit, False)
+            search_pages = {"pages":search_bucketlists.pages}
+            bucketlists = search_bucketlists.items
+            print(len(bucketlists))
+            if len(bucketlists) != 0:
+                responseObject = []
+                for bucketlist in bucketlists:
+                    bucket = {
+                        'id': bucketlist.id,
+                        'name': bucketlist.name,
+                        'description': bucketlist.description,
+                        'created': bucketlist.created_at,
+                        'modified': bucketlist.updated_at
+                    }
+                    responseObject.append(bucket)
+                responseObject.append(search_pages)
+                return make_response((responseObject), 201)
+            else:
+                responseObject = {
+                    'status': 'fail',
+                    'message': 'Bucketlist not found'
                 }
-                responseObject.append(bucket)
-            return make_response((responseObject), 201)
-            if bucketlists is None:
-                raise NotFound("wewe wacha")
+                return make_response((responseObject))
 
     @logged_in
     def post(self, user_id=None, res=None):
