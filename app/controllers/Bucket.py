@@ -37,7 +37,7 @@ class BucketsResource(Resource):
                         'modified': bucketlist.updated_at
                     }
                     responseObject.append(bucket)
-                    responseObject.append(total_pages)
+                responseObject.append(total_pages)
                 return make_response((responseObject))
         else:
             print(q)
