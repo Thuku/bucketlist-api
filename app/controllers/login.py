@@ -43,6 +43,6 @@ def logged_in(func):
                 'status': 'fail',
                 'message': 'Invalid token, please log in'
             }
-            return make_response(jsonify(responseObject))
+            return make_response(jsonify(responseObject), 401)
         return func(*args, **kwargs)
     return decorator
