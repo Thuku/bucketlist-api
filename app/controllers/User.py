@@ -3,6 +3,8 @@ from flask import Flask, request, make_response, json, jsonify
 from flask_restful import reqparse, request, Resource
 from app import db, bcrypt
 from app.models.Models import User
+from app.controllers.login import logged_in
+import re
 
 
 class Register(Resource):
@@ -35,7 +37,7 @@ class Register(Resource):
                 'status': 'Fail',
                 'message': 'Please confirm you password'
             }
-            return make_response(jsonify(responseObject), 401)
+            return make_response(jsonify(responseObject), 400)
         elif len(arguments['password']) < 6:
             responseObject = {
                 'status': 'Fail',
@@ -46,6 +48,18 @@ class Register(Resource):
             responseObject = {
                 'status': 'Fail',
                 'message': 'Username should be more than Five characters'
+            }
+            return make_response(jsonify(responseObject), 400)
+        elif re.match("([^@|\s]+@[^@]+\.[^@|\s]+)", arguments['email']) == None:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Invalid Email'
+            }
+            return make_response(jsonify(responseObject), 400)
+        elif (arguments['username'].strip()).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Username should not have special spaces/characters'
             }
             return make_response(jsonify(responseObject), 400)
         elif User.query.filter_by(user_name=arguments.get('username')).first():
@@ -82,6 +96,16 @@ class Register(Resource):
 class Login(Resource):
     def __init__(self):
         pass
+
+    @logged_in
+    def get(self, user_id=None, res=None):
+        if user_id is not None:
+            user = User.query.get(user_id)
+            responseObject = {
+                'status': 'success',
+                'username': user.user_name
+            }
+        return make_response(jsonify(responseObject), 200)
 
     def post(self):
         parser = reqparse.RequestParser()

@@ -4,8 +4,7 @@ from flask_restful import reqparse, request, Resource
 from werkzeug.exceptions import NotFound
 from app import db
 from app.models.Models import User, Bucket, Activity
-from app.models.Models import logged_in
-
+from app.controllers.login import logged_in
 
 class ActivitiesResource(Resource):
 
@@ -51,6 +50,12 @@ class ActivitiesResource(Resource):
                 'message': "Activity should be more than 5 characters"
             }
             return make_response(jsonify(responseObject), 401)
+        elif (args['name'].replace(' ', '')).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Bucketlist name should not have special characters'
+            }
+            return make_response(jsonify(responseObject), 400)
 
         else:
             if user_id is not None:

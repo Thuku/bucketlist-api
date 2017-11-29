@@ -3,6 +3,7 @@ from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
 from config import configuration
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS, cross_origin
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -16,6 +17,7 @@ def create_app(environment):
     """Create application."""
     app = FlaskAPI(__name__)
     app.config.from_object(configuration[environment])
+    CORS(app, supports_credentials=True)
     db.init_app(app)
     app.register_blueprint(api_blueprint)
     return app

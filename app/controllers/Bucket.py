@@ -4,18 +4,21 @@ from flask_restful import reqparse, request, Resource
 from werkzeug.exceptions import NotFound
 from app import db
 from app.models.Models import User, Bucket
-from app.models.Models import logged_in
+from app.controllers.login import logged_in
 
 
 class BucketsResource(Resource):
 
     @logged_in
     def get(self, user_id=None, res=None):
+        q = request.args.get('q', type=str, default=None)
         page = request.args.get('page', type=int, default=1)
-        limit = request.args.get('limit', type=int, default=5)
-        if user_id is not None:
-            bucketlists = Bucket.query.filter_by(
-                user_id=user_id).paginate(page, limit, False).items
+        limit = request.args.get('limit', type=int, default=3)
+        Bucket_obj = Bucket.query.filter_by(
+                user_id=user_id).paginate(page, limit, False)
+        total_pages={"pages":Bucket_obj.pages}
+        if user_id is not None and q is None:
+            bucketlists = Bucket_obj.items
             if len(bucketlists) == 0:
                 responseObject = {
                     'status': 'alert',
@@ -23,6 +26,26 @@ class BucketsResource(Resource):
                 }
                 return make_response((responseObject))
             else:
+                responseObject = []
+                for bucketlist in bucketlists:
+                    
+                    bucket = {
+                        'id': bucketlist.id,
+                        'name': bucketlist.name,
+                        'description': bucketlist.description,
+                        'created': bucketlist.created_at,
+                        'modified': bucketlist.updated_at
+                    }
+                    responseObject.append(bucket)
+                responseObject.append(total_pages)
+                return make_response((responseObject))
+        else:
+            print(q)
+            search_bucketlists = Bucket.query.filter(Bucket.name.contains(q), user_id==user_id).paginate(page, limit, False)
+            search_pages = {"pages":search_bucketlists.pages}
+            bucketlists = search_bucketlists.items
+            print(len(bucketlists))
+            if len(bucketlists) != 0:
                 responseObject = []
                 for bucketlist in bucketlists:
                     bucket = {
@@ -33,6 +56,13 @@ class BucketsResource(Resource):
                         'modified': bucketlist.updated_at
                     }
                     responseObject.append(bucket)
+                responseObject.append(search_pages)
+                return make_response((responseObject), 201)
+            else:
+                responseObject = {
+                    'status': 'alert',
+                    'message': 'Bucketlist not found'
+                }
                 return make_response((responseObject))
 
     @logged_in
@@ -54,6 +84,19 @@ class BucketsResource(Resource):
                 'message': 'Bucketlist Description should be at least 5 characters'
             }
             return make_response(jsonify(responseObject), 401)
+        elif (args['name'].replace(' ', '')).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Bucketlist name should not have special characters'
+            }
+            return make_response(jsonify(responseObject), 400)
+        elif (args['description'].replace(' ', '')).isalpha() is False:
+            responseObject = {
+                'status': 'Fail',
+                'message': 'Bucketlist description should not have special characters'
+            }
+            return make_response(jsonify(responseObject), 400)
+
         else:
             if user_id is not None:
                 bucketlist = Bucket.query.filter_by(
